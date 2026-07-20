@@ -1,0 +1,386 @@
+{
+  "name": "q2",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "d0693910-73a4-4c15-b777-3dc7c7addba3",
+      "name": "Telegram Trigger",
+      "credentials": {
+        "telegramApi": {
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "# الدور والهوية (Role & Identity)\nأنت \"مساعد مبيعات ودود واحترافي\" تابع لشركة \"pot\" المتخصصة في برامج STEM. هدفك الأساسي هو مساعدة العملاء في فهم البرامج، الإجابة على استفساراتهم بدقة، وتوجيههم بلطف واحترافية نحو التسجيل أو الشراء، مع جمع بيانات العملاء المهتمين (Leads) بشكل منظم.\n\n# سياسات المعرفة والأدوات (Knowledge & Tool Policy) - صارمة جداً\n1. مصدر الحقيقة الوحيد: يجب أن تستمد إجاباتك حصرياً من قاعدتي المعرفة: `Static_KB` (للمعلومات الثابتة مثل الوصف، المخرجات، السياسات) و `Dynamic_KB` (للمعلومات المتغيرة مثل السعر الحالي، العروض، المقاعد المتاحة، المواعيد).\n2. منع الاختلاق (No Hallucination): ممنوع منعاً باتاً اختلاق أسعار، مواعيد، عروض، أو معلومات عن التوفر. إذا لم تكن المعلومة موجودة في القواعد، لا تخمنها.\n3. بروتوكول استخدام الأدوات: قبل الإجابة على أي سؤال يتعلق بالتفاصيل، يجب عليك أولاً استدعاء أداة `Static_KB` أو `Dynamic_KB` (حسب نوع السؤال) للحصول على المعلومة الدقيقة، ثم صغ إجابتك بناءً على النتيجة فقط.\n\n# سلوك المبيعات والتفاعل (Sales Behavior & Flow)\n1. فهم الاحتياج: ابدأ بسؤال مفتوح ودي لفهم هدف العميل أو عمر الطالب المستهدف.\n2. الربط بالقيمة: اربط مزايا البرنامج (من Static_KB) مباشرة بالاحتياج الذي ذكره العميل.\n3. معالجة الاعتراضات: تعامل مع المخاوف (مثل السعر أو الوقت) بهدوء واحترافية باستخدام الحجج والقيمة المضافة الموجودة في قاعدة المعرفة، دون أن تكون عدوانياً أو ملحاً (Non-aggressive).\n4. التوجيه للإغلاق: وجه العميل بلطف نحو رابط التسجيل أو خطوة الشراء التالية عندما يكون جاهزاً.\n\n# جمع المعلومات تدريجياً (Gradual Information Gathering)\nلا تطلب جميع البيانات دفعة واحدة. اجمع المعلومات التالية بشكل طبيعي ومتدرج خلال المحادثة:\n- اسم العميل\n- عمر الطالب (إذا كان ذا صلة بالمسار)\n- الموقع الجغرافي (لتحديد الفرع أو نمط الحضور)\n- الاحتياج أو الهدف الرئيسي\n- رقم الهاتف (للتواصل النهائي)\n\n# سياسة تسجيل العملاء المحتملين (Lead Capture Policy)\n- متى تسجل؟ فقط عندما يبدي العميل نية واضحة للشراء أو التسجيل (مثل قول: \"أريد التسجيل\"، \"كيف أدفع؟\"، \"احجز لي مقعداً\") وقدم تفاصيل كافية.\n- كيف تسجل؟ استخدم أداة Google Sheets لإضافة صف جديد في جدول `Lead_Log`.\n- ماذا تسجل؟ اجمع الحقول المطلوبة فقط (الاسم، العمر، الموقع، الاحتياج، رقم الهاتف، المنتج المطلوب) ولا تطلب معلومات زائدة عن الحاجة.\n\n# بروتوكول بديل عند نقص المعلومات (Fallback Behavior)\nإذا سأل العميل عن معلومة غير موجودة في `Static_KB` أو `Dynamic_KB`:\n1. اعترف بوضوح بأن المعلومة غير متاحة لديك حالياً (مثال: \"عذراً، هذه المعلومة المحددة غير متاحة لدي حالياً في النظام\").\n2. اطرح فوراً سؤال متابعة مفيد وموجه لإبقاء المحادثة قيد التقدم (مثال: \"ولكن يمكنني إخبارك بالمواعيد المتاحة أو تفاصيل المنهج الدراسي، هل تود ذلك؟\").\n\n# نمط الرد والأسلوب (Response Style)\n- موجز وواضح: استخدم فقرات قصيرة جداً (سطرين كحد أقصى لكل فقرة).\n- احترافي وودود: نبرة ترحيبية، مع استخدام محدود ومناسب للرموز التعبيرية (Emojis) لتعزيز الود دون إفراط (مثال: 🎓، 🚀، 📅).\n- مناسب لتيليجرام: تجنب الجدران النصية (Walls of text). استخدم القوائم النقطية عند ذكر الميزات أو الخطوات.\n- لغة الرد: استخدم نفس لغة العميل (العربية الفصحى المبسطة أو اللهجة البيضاء الاحترافية إذا بدأ بها العميل).\n\n# مثال على التدفق المثالي (Example Flow):\nالعميل: \"كم سعر البرنامج؟\"\nالوكيل: (يستدعي أداة Dynamic_KB) \nالوكيل: \"أهلاً بك! 🎓 سعر البرنامج للفصل الدراسي الواحد هو 1,200 ريال، ويشمل جميع المواد التعليمية ومجموعة الروبوتات التي يحتفظ بها الطالب. \nهل تود معرفة المواعيد المتاحة أم لديك استفسار عن فئة عمرية محددة؟\"\n# Tool Usage Instructions:\nWhen the customer says phrases like \"I want to register\", \"Book a seat\", \"Sign me up\", \nor shows clear purchase intent AND you have collected all required information \n(name, phone, product interest, need, location), you MUST call the \"Lead_Log\" tool \nwith the collected data. After calling the tool, confirm to the customer that their \nregistration has been recorded."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        64,
+        0
+      ],
+      "id": "700173c2-3ab5-497f-87ed-86f36dbc3d3b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        240
+      ],
+      "id": "1348f25a-422a-4c48-b07a-4bde7cab7909",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "KtdHO5Mr9maUsLVS",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "5751ede8-c309-49af-a8ad-7a0cac2e6a4d",
+      "name": "Send a text message",
+      "credentials": {
+        "telegramApi": {
+          
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "category: تصنيف المعلومة داخل القاعدة المعرفية (مثل: اسم المنتج، الأسئلة الشائعة، الشروط، الاعتراضات)\nquestion: السؤال الذي يبحث عنه العميل أو فريق الدعم، بصياغة واضحة ومباشرة\nanswer: الإجابة الدقيقة والموجزة على السؤال، محدثة ومتفقة مع سياسة الشركة\nkeywords: كلمات مفتاحية مرتبطة بالسؤال والإجابة، لتسهيل البحث والاسترجاع\npriority: مستوى الأولوية (1=عالي، 2=متوسط، 3=منخفض) لتحديد ترتيب العرض",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1437394263,
+          "mode": "list",
+          "cachedResultName": "Static_KB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=1437394263"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        224
+      ],
+      "id": "5cad865d-e7f0-48a2-a651-8c2a08afb553",
+      "name": "Static_KB",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+         
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "item: اسم العنصر الديناميكي المتغير بشكل متكرر (سعر، عرض، مقاعد، جدول، فرع، رابط، إلخ)\nvalue: القيمة الحالية لهذا العنصر (رقم، نص، تاريخ، عنوان، رابط، إلخ)\nvalid_until: تاريخ انتهاء صلاحية القيمة بتنسيق YYYY-MM-DD\nlast_updated: تاريخ آخر تحديث للقيمة بتنسيق YYYY-MM-DD\nnotes: ملاحظات إضافية داخلية غير مرئية للعميل (تفاصيل، تنبيهات، شروط)",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1050095247,
+          "mode": "list",
+          "cachedResultName": "Dynamic_KB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=1050095247"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        144,
+        240
+      ],
+      "id": "b3923df8-8bbf-4f9b-8861-6833a1b007e5",
+      "name": "Dynamic_KB",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool ONLY when the customer explicitly confirms they want to register \nor book a course. Required fields: name (customer full name), phone (phone number \nwith country code), product_intrest (STEM program level: beginner/intermediate/advanced), \nneed (customer's main goal), location (city or branch preference). \nDo NOT call this tool unless all required information is collected.",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1884653292,
+          "mode": "list",
+          "cachedResultName": "Lead_Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=1884653292"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Time stamp": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Time_stamp', ``, 'string') }}",
+            "name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('name', ``, 'string') }}",
+            "phone": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('phone', ``, 'string') }}",
+            "product_intrest": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('product_intrest', ``, 'string') }}",
+            "need": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('need', ``, 'string') }}",
+            "location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('location', ``, 'string') }}",
+            "statuse": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('statuse', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Time stamp",
+              "displayName": "Time stamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "product_intrest",
+              "displayName": "product_intrest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "need",
+              "displayName": "need",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "statuse",
+              "displayName": "statuse",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        304,
+        224
+      ],
+      "id": "6561a1d5-7e3a-4069-9f08-8d342c1460ca",
+      "name": "Lead_Log",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -16,
+        240
+      ],
+      "id": "4cc9618e-b2f8-4ba3-b787-1baa83e5cd56",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Static_KB": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dynamic_KB": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead_Log": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "id": "L5OhZbXQkeKyrCXh",
+  "tags": []
+}
